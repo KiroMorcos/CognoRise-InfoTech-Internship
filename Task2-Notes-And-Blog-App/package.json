@@ -1,0 +1,27 @@
+{
+  "name": "task2-notes-and-blog-app",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KiroMorcos/CognoRise-InfoTech-Internship.git"
+  },
+  "keywords": [
+    "Blog-app"
+  ],
+  "author": "Kirolos Morcos Hamdy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KiroMorcos/CognoRise-InfoTech-Internship/issues"
+  },
+  "homepage": "https://github.com/KiroMorcos/CognoRise-InfoTech-Internship#readme",
+  "description": "",
+  "dependencies": {
+    "body-parser": "^2.4.0",
+    "ejs": "^7.0.2",
+    "express": "^5.3.0"
+  }
+}

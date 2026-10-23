@@ -1,0 +1,35 @@
+<%- include("partials/header") %>
+
+<h2>All Posts</h2>
+
+<% if(posts.length === 0){ %>
+
+<p>No posts yet.</p>
+
+<% } %>
+
+<% posts.forEach(post => { %>
+
+<div class="card">
+
+    <h3><%= post.title %></h3>
+
+    <p>
+        <%= post.content.substring(0,150) %>...
+    </p>
+
+    <a href="/post/<%= post.id %>">Read More</a>
+
+    <a href="/edit/<%= post.id %>">Edit</a>
+
+    <form action="/delete/<%= post.id %>" method="POST">
+
+        <button>Delete</button>
+
+    </form>
+
+</div>
+
+<% }) %>
+
+<%- include("partials/footer") %>
