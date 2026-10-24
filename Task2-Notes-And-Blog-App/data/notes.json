@@ -1,0 +1,38 @@
+[
+  {
+    "id": "1",
+    "title": "Welcome to Your Enhanced Notes App! 🚀",
+    "description": "This app now supports pinning, tags, live character counters, sorting, and JSON backups. Try pressing \"/\" to search or \"n\" for a new note!",
+    "tags": [
+      "Welcome",
+      "Tips"
+    ],
+    "pinned": false,
+    "createdAt": "2026-10-23T20:30:58.218Z",
+    "updatedAt": "2026-10-23T20:30:58.219Z"
+  },
+  {
+    "id": "2",
+    "title": "Mastering Node.js & Express",
+    "description": "Building CRUD applications helps solidify routing, middleware, template engines like EJS, and data persistence paradigms.",
+    "tags": [
+      "Coding",
+      "NodeJS"
+    ],
+    "pinned": false,
+    "createdAt": "2026-10-23T21:30:58.219Z",
+    "updatedAt": "2026-10-23T21:30:58.219Z"
+  },
+  {
+    "id": "3",
+    "title": "UI/UX Design Principles",
+    "description": "Clean typography, consistent spacing, intuitive visual hierarchy, and smooth micro-interactions make web apps delightful to use.",
+    "tags": [
+      "Design",
+      "UIUX"
+    ],
+    "pinned": false,
+    "createdAt": "2026-10-23T22:30:58.219Z",
+    "updatedAt": "2026-10-23T22:30:58.219Z"
+  }
+]

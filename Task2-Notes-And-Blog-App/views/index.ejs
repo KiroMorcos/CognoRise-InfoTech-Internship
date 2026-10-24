@@ -1,35 +1,147 @@
-<%- include("partials/header") %>
+<%- include('partials/header') %>
 
-<h2>All Posts</h2>
+<div class="dashboard-controls">
+    <div class="search-wrapper">
+        <input type="text" id="search-input" placeholder="Search notes by title, keyword, or tag... (Press '/' to focus)" autocomplete="off">
+    </div>
+    
+    <div class="filter-sort-bar">
+        <div class="tag-chips" id="tag-filters">
+            <button class="chip active" data-tag="all">All</button>
+            <% 
+               const allTags = [...new Set(notes.flatMap(n => n.tags || []))];
+            %>
+            <% allTags.forEach(tag => { %>
+                <button class="chip" data-tag="<%= tag %>">#<%= tag %></button>
+            <% }) %>
+        </div>
 
-<% if(posts.length === 0){ %>
-
-<p>No posts yet.</p>
-
-<% } %>
-
-<% posts.forEach(post => { %>
-
-<div class="card">
-
-    <h3><%= post.title %></h3>
-
-    <p>
-        <%= post.content.substring(0,150) %>...
-    </p>
-
-    <a href="/post/<%= post.id %>">Read More</a>
-
-    <a href="/edit/<%= post.id %>">Edit</a>
-
-    <form action="/delete/<%= post.id %>" method="POST">
-
-        <button>Delete</button>
-
-    </form>
-
+        <div class="sort-wrapper">
+            <select id="sort-select">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="edited">Recently Edited</option>
+                <option value="az">A → Z</option>
+            </select>
+        </div>
+    </div>
 </div>
 
-<% }) %>
+<div class="notes-grid" id="notes-grid">
+    <% if (notes.length === 0) { %>
+        <div class="empty-state">
+            <h3>No notes found</h3>
+            <p>Create your first note or import a backup to get started.</p>
+            <a href="/new" class="btn btn-primary">Create Note</a>
+        </div>
+    <% } else { %>
+        <% notes.forEach(note => { %>
+            <div class="note-card <%= note.pinned ? 'pinned' : '' %>" 
+                 data-title="<%= note.title.toLowerCase() %>" 
+                 data-desc="<%= note.description.toLowerCase() %>"
+                 data-tags="<%= JSON.stringify(note.tags || []) %>"
+                 data-created="<%= note.createdAt %>"
+                 data-updated="<%= note.updatedAt %>"
+                 data-pinned="<%= note.pinned ? 'true' : 'false' %>">
+                
+                <div class="card-header">
+                    <span class="badge"><%= note.pinned ? '📌 Pinned' : '📝 Note' %></span>
+                    <div class="card-actions">
+                        <form action="/pin/<%= note.id %>" method="POST" style="display:inline;">
+                            <button type="submit" class="icon-btn" title="Pin/Unpin">📌</button>
+                        </form>
+                        <a href="/edit/<%= note.id %>" class="icon-btn" title="Edit">✏️</a>
+                        <form action="/delete/<%= note.id %>" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this note?');">
+                            <button type="submit" class="icon-btn delete" title="Delete">🗑️</button>
+                        </form>
+                    </div>
+                </div>
 
-<%- include("partials/footer") %>
+                <h3 class="note-title"><%= note.title %></h3>
+                <p class="note-desc"><%= note.description %></p>
+
+                <% if (note.tags && note.tags.length > 0) { %>
+                    <div class="card-tags">
+                        <% note.tags.forEach(t => { %>
+                            <span class="tag-chip" onclick="filterByTag('<%= t %>')">#<%= t %></span>
+                        <% }) %>
+                    </div>
+                <% } %>
+
+                <div class="card-footer-meta">
+                    <small>Updated: <%= new Date(note.updatedAt).toLocaleDateString() %></small>
+                </div>
+            </div>
+        <% }) %>
+    <% } %>
+</div>
+
+<script>
+    const searchInput = document.getElementById('search-input');
+    const sortSelect = document.getElementById('sort-select');
+    const tagChips = document.querySelectorAll('.chip');
+    let currentTag = 'all';
+
+    function filterAndSortNotes() {
+        const query = searchInput.value.toLowerCase().trim();
+        const grid = document.getElementById('notes-grid');
+        const cards = Array.from(grid.getElementsByClassName('note-card'));
+
+        cards.forEach(card => {
+            const title = card.getAttribute('data-title');
+            const desc = card.getAttribute('data-desc');
+            const tags = JSON.parse(card.getAttribute('data-tags'));
+            
+            const matchesQuery = title.includes(query) || desc.includes(query) || tags.some(t => t.toLowerCase().includes(query));
+            const matchesTag = currentTag === 'all' || tags.includes(currentTag);
+
+            if (matchesQuery && matchesTag) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Sorting logic
+        const sortValue = sortSelect.value;
+        cards.sort((a, b) => {
+            const aPinned = a.getAttribute('data-pinned') === 'true';
+            const bPinned = b.getAttribute('data-pinned') === 'true';
+
+            // Pinned notes always stay at top
+            if (aPinned && !bPinned) return -1;
+            if (!aPinned && bPinned) return 1;
+
+            if (sortValue === 'newest') {
+                return new Date(b.getAttribute('data-created')) - new Date(a.getAttribute('data-created'));
+            } else if (sortValue === 'oldest') {
+                return new Date(a.getAttribute('data-created')) - new Date(b.getAttribute('data-created'));
+            } else if (sortValue === 'edited') {
+                return new Date(b.getAttribute('data-updated')) - new Date(a.getAttribute('data-updated'));
+            } else if (sortValue === 'az') {
+                return a.getAttribute('data-title').localeCompare(b.getAttribute('data-title'));
+            }
+        });
+
+        cards.forEach(card => grid.appendChild(card));
+    }
+
+    searchInput.addEventListener('input', filterAndSortNotes);
+    sortSelect.addEventListener('change', filterAndSortNotes);
+
+    tagChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            tagChips.forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            currentTag = chip.getAttribute('data-tag');
+            filterAndSortNotes();
+        });
+    });
+
+    window.filterByTag = function(tag) {
+        const chip = Array.from(tagChips).find(c => c.getAttribute('data-tag') === tag);
+        if (chip) chip.click();
+    };
+</script>
+
+<%- include('partials/footer') %>

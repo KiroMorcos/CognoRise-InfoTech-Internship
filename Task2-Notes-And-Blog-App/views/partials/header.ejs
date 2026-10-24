@@ -1,20 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>SimBlog</title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevNotes & Blog App</title>
     <link rel="stylesheet" href="/css/style.css">
-
 </head>
 <body>
-
-<header>
-
-    <h1>SimBlog</h1>
-
-    <a href="/">Home</a>
-    <a href="/new">New Post</a>
-
+<header class="navbar">
+    <div class="nav-container">
+        <a href="/" class="logo">⚡ DevNotes</a>
+        <div class="nav-actions">
+            <button id="theme-toggle" class="btn btn-secondary" title="Toggle Dark/Light Mode">🌙</button>
+            <a href="/new" class="btn btn-primary" id="new-note-btn">✨ New Note <span class="kbd">N</span></a>
+            <a href="/export" class="btn btn-secondary">📥 Export JSON</a>
+            <label class="btn btn-secondary upload-btn" style="cursor: pointer;">
+                📤 Import JSON <input type="file" id="import-file" accept=".json" style="display: none;">
+            </label>
+        </div>
+    </div>
 </header>
-
-<div class="container">
+    <main class="main-content">
