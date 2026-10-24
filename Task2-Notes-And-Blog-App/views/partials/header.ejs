@@ -1,23 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevNotes & Blog App</title>
-    <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-<header class="navbar">
-    <div class="nav-container">
-        <a href="/" class="logo">⚡ DevNotes</a>
-        <div class="nav-actions">
-            <button id="theme-toggle" class="btn btn-secondary" title="Toggle Dark/Light Mode">🌙</button>
-            <a href="/new" class="btn btn-primary" id="new-note-btn">✨ New Note <span class="kbd">N</span></a>
-            <a href="/export" class="btn btn-secondary">📥 Export JSON</a>
-            <label class="btn btn-secondary upload-btn" style="cursor: pointer;">
-                📤 Import JSON <input type="file" id="import-file" accept=".json" style="display: none;">
-            </label>
-        </div>
+<header class="top">
+  <div class="bar">
+    <button
+      type="button"
+      class="brand"
+      id="home"
+      aria-label="<%= brand %> — show all notes"
+    >
+      <i aria-hidden="true">✎</i><span><%= brand %></span>
+    </button>
+    <div class="search">
+      <input
+        id="q"
+        type="search"
+        placeholder="Search title, keyword or #tag…  ( / )"
+        aria-label="Search notes"
+        autocomplete="off"
+      />
     </div>
+    <button class="icon" id="theme" aria-label="Switch theme"></button>
+    <button class="btn primary" id="newBtn">+ New note</button>
+  </div>
 </header>
-    <main class="main-content">

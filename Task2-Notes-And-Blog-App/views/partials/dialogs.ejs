@@ -1,0 +1,97 @@
+<dialog id="editor">
+  <div class="in">
+    <form id="form" novalidate>
+      <h2 id="edTitle">New note</h2>
+      <div class="draft" id="draftBar" hidden>
+        <span>📝 Unsaved draft restored.</span
+        ><button type="button" class="link" id="discard">Discard draft</button>
+      </div>
+      <label for="title">Title <small id="tc">0/80</small></label>
+      <input
+        id="title"
+        maxlength="80"
+        autocomplete="off"
+        aria-describedby="titleErr"
+      />
+      <p class="err" id="titleErr" role="alert"></p>
+      <label for="content">Description <small id="cc">0/5000</small></label>
+      <div class="tb" role="toolbar" aria-label="Markdown formatting">
+        <% formats.forEach(function(b){ %><button
+          type="button"
+          data-f="<%= b.f %>"
+          aria-label="<%= b.label %>"
+          title="<%= b.label %>"
+        >
+          <%- b.html %>
+        </button>
+        <% }) %><span class="sp"></span
+        ><button type="button" id="prevBtn" aria-pressed="false">
+          👁 Preview
+        </button>
+      </div>
+      <textarea
+        id="content"
+        rows="8"
+        maxlength="5000"
+        placeholder="Supports **bold**, *italic*, `code`, lists and more…"
+        aria-describedby="contentErr"
+      ></textarea>
+      <div id="prev" class="md" hidden></div>
+      <p class="err" id="contentErr" role="alert"></p>
+      <label id="colLbl">Colour</label>
+      <div
+        class="colors"
+        id="colors"
+        role="radiogroup"
+        aria-labelledby="colLbl"
+      >
+        <% colors.forEach(function(c){ %><button
+          type="button"
+          class="sw"
+          data-c="<%= c %>"
+          role="radio"
+          aria-checked="false"
+          aria-label="<%= c === 'plain' ? 'No colour' : c %>"
+          title="<%= c %>"
+        ></button>
+        <% }) %>
+      </div>
+      <label for="tags">Tags <small>comma separated, max 6</small></label>
+      <input id="tags" placeholder="work, ideas, study" autocomplete="off" />
+      <div class="row">
+        <span id="ds" aria-live="polite"></span
+        ><button type="button" class="btn" id="cancel">Cancel</button
+        ><button class="btn primary">Save note</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<dialog id="viewer">
+  <div class="in" id="vWrap">
+    <h2 id="vTitle"></h2>
+    <p class="meta" id="vMeta"></p>
+    <div class="tags" id="vTags"></div>
+    <div id="vBody" class="md"></div>
+    <div class="row">
+      <button class="btn" id="vPin"></button
+      ><button class="btn" id="vEdit">Edit</button
+      ><button class="btn danger" id="vDel">Delete</button
+      ><button class="btn primary" id="vClose">Close</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="confirm">
+  <div class="in">
+    <form method="dialog">
+      <h2>Delete this note?</h2>
+      <p id="cMsg"></p>
+      <div class="row">
+        <button class="btn" value="cancel" autofocus>Cancel</button
+        ><button class="btn danger" value="ok">Yes, delete</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+<div id="toast" role="status" aria-live="polite"></div>
