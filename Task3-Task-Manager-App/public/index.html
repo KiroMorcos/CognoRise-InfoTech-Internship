@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TaskFlow — Task Manager</title>
+    <meta
+      name="description"
+      content="TaskFlow: plan, track and finish your tasks. Secure sign-in, board and list views, dark mode."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="js/theme.js"></script>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="glow" aria-hidden="true"></div>
+
+    <!-- ===== Auth screen ===== -->
+    <main id="auth" class="auth" hidden>
+      <section class="auth-hero">
+        <div class="brand">
+          <span class="logo" aria-hidden="true">✓</span>TaskFlow
+        </div>
+        <h1>Plan less.<br /><span class="grad">Finish more.</span></h1>
+        <p>
+          A focused workspace to capture tasks, set priorities and stay on top
+          of deadlines.
+        </p>
+        <ul class="points">
+          <li>Board and list views with drag &amp; drop</li>
+          <li>Priorities, due dates and tags</li>
+          <li>Private by design — secure sign-in</li>
+        </ul>
+      </section>
+      <section class="auth-card" data-spot aria-labelledby="authTitle">
+        <button
+          class="icon theme-btn"
+          type="button"
+          aria-label="Toggle theme"
+        ></button>
+        <h2 id="authTitle">Welcome back</h2>
+        <div class="tabs" role="tablist">
+          <button type="button" role="tab" id="tabLogin" aria-selected="true">
+            Sign in
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="tabRegister"
+            aria-selected="false"
+          >
+            Create account
+          </button>
+        </div>
+        <form id="authForm" novalidate>
+          <label class="field" data-only="register" hidden
+            >Full name
+            <input
+              name="name"
+              autocomplete="name"
+              placeholder="Jane Doe" /><span class="err" data-for="name"></span
+          ></label>
+          <label class="field"
+            >Email
+            <input
+              name="email"
+              type="email"
+              autocomplete="email"
+              placeholder="you@example.com" /><span
+              class="err"
+              data-for="email"
+            ></span
+          ></label>
+          <label class="field"
+            >Password
+            <input
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              placeholder="••••••••"
+            /><span class="err" data-for="password"></span>
+            <small class="hint" data-only="register" hidden
+              >At least 8 characters, with a letter and a number.</small
+            ></label
+          >
+          <p class="form-err" id="authErr" role="alert"></p>
+          <button class="btn primary block" id="authSubmit">Sign in</button>
+        </form>
+      </section>
+    </main>
+
+    <!-- ===== App shell ===== -->
+    <div id="app" class="shell" hidden>
+      <aside class="side" id="side" aria-label="Sidebar">
+        <div class="brand">
+          <span class="logo" aria-hidden="true">✓</span>TaskFlow
+        </div>
+        <nav aria-label="Views" class="nav-tabs">
+          <p class="side-title">Workspace</p>
+          <button type="button" class="nav-item on" data-tab="tasks">
+            ▦ Tasks
+          </button>
+          <button type="button" class="nav-item" data-tab="time">
+            ⏱ Time tracking
+          </button>
+        </nav>
+        <nav aria-label="Task filters">
+          <p class="side-title">Filter tasks</p>
+          <ul class="nav" id="nav">
+            <li>
+              <button type="button" class="nav-item on" data-filter="all">
+                <i class="dot d-all"></i>All tasks<b id="nAll">0</b>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="nav-item" data-filter="todo">
+                <i class="dot d-todo"></i>To do<b id="nTodo">0</b>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="nav-item" data-filter="in-progress">
+                <i class="dot d-prog"></i>In progress<b id="nProg">0</b>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="nav-item" data-filter="done">
+                <i class="dot d-done"></i>Done<b id="nDone">0</b>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="nav-item" data-filter="overdue">
+                <i class="dot d-late"></i>Overdue<b id="nLate">0</b>
+              </button>
+            </li>
+          </ul>
+        </nav>
+        <div class="side-foot">
+          <div class="me" data-spot>
+            <span class="avatar" id="avatar" aria-hidden="true"></span>
+            <div class="me-info">
+              <strong id="meName"></strong><small id="meEmail"></small>
+            </div>
+            <button
+              type="button"
+              class="icon"
+              id="logout"
+              aria-label="Sign out"
+              title="Sign out"
+            >
+              ➜]
+            </button>
+          </div>
+        </div>
+      </aside>
+      <div class="scrim" id="scrim" hidden></div>
+
+      <div class="main">
+        <header class="topbar">
+          <button
+            type="button"
+            class="icon menu"
+            id="menu"
+            aria-label="Open menu"
+            aria-controls="side"
+          >
+            ☰
+          </button>
+          <div class="search">
+            <input
+              id="search"
+              type="search"
+              placeholder="Search tasks…  ( / )"
+              aria-label="Search tasks"
+              autocomplete="off"
+            />
+          </div>
+          <div class="topbar-r">
+            <button type="button" class="btn primary" id="newTask">
+              + <span>New task</span>
+            </button>
+            <button
+              type="button"
+              class="icon theme-btn"
+              id="themeTop"
+              aria-label="Toggle theme"
+            ></button>
+          </div>
+        </header>
+
+        <div id="timerBar" class="timerbar" role="status" hidden>
+          <span class="pulse" aria-hidden="true"></span>
+          <div class="timerbar-info">
+            <strong id="tbTask">Task</strong><span id="tbNote"></span>
+          </div>
+          <div class="clock" data-clock>00:00<small>:00</small></div>
+          <button type="button" class="btn sm" id="tbStop">■ Stop</button>
+        </div>
+
+        <div class="content">
+          <div id="tasksView">
+            <section class="head">
+              <h1 id="hello"></h1>
+              <p id="subhello"></p>
+            </section>
+
+            <section class="stats" aria-label="Summary">
+              <article class="stat" data-spot>
+                <span>Total tasks</span><strong id="sTotal">0</strong>
+              </article>
+              <article class="stat" data-spot>
+                <span>In progress</span><strong id="sProg">0</strong>
+              </article>
+              <article class="stat" data-spot>
+                <span>Completed</span><strong id="sDone">0</strong>
+                <div
+                  class="bar"
+                  role="progressbar"
+                  aria-label="Completion"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  id="sBar"
+                >
+                  <i></i>
+                </div>
+              </article>
+              <article class="stat late" data-spot>
+                <span>Overdue</span><strong id="sLate">0</strong>
+              </article>
+            </section>
+
+            <section class="toolbar" aria-label="View options">
+              <div class="seg" role="group" aria-label="Layout">
+                <button type="button" id="vBoard" aria-pressed="true">
+                  ▦ Board</button
+                ><button type="button" id="vList" aria-pressed="false">
+                  ☰ List
+                </button>
+              </div>
+              <div class="tool-r">
+                <label class="sel"
+                  >Priority
+                  <select id="fPriority">
+                    <option value="">All</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                  </select></label
+                >
+                <label class="sel"
+                  >Sort
+                  <select id="fSort">
+                    <option value="new">Newest</option>
+                    <option value="due">Due date</option>
+                    <option value="priority">Priority</option>
+                    <option value="az">A → Z</option>
+                  </select></label
+                >
+              </div>
+            </section>
+
+            <section id="board" class="board" aria-live="polite"></section>
+            <div id="empty" class="empty" hidden></div>
+          </div>
+
+          <div id="timeView" hidden>
+            <section class="head">
+              <h1>Time tracking</h1>
+              <p id="timeSub">
+                How much you worked and what each block of time was spent on.
+              </p>
+            </section>
+            <section class="panel quick" aria-label="Start a timer">
+              <label>Task<select id="qTask"></select></label>
+              <label
+                >What are you working on?<input
+                  id="qDesc"
+                  maxlength="200"
+                  placeholder="Description (optional)"
+                  autocomplete="off"
+              /></label>
+              <button type="button" class="btn primary" id="qStart">
+                ▶ Start timer
+              </button>
+            </section>
+            <div class="toolbar">
+              <div class="seg" role="group" aria-label="Date range">
+                <button type="button" data-range="today" aria-pressed="false">
+                  Today
+                </button>
+                <button type="button" data-range="week" aria-pressed="true">
+                  This week
+                </button>
+                <button type="button" data-range="month" aria-pressed="false">
+                  This month
+                </button>
+                <button type="button" data-range="last30" aria-pressed="false">
+                  Last 30 days
+                </button>
+              </div>
+            </div>
+            <section class="stats" aria-label="Time summary">
+              <article class="stat" data-spot>
+                <span>Total tracked</span><strong id="rTotal">0m</strong>
+              </article>
+              <article class="stat" data-spot>
+                <span>Sessions</span><strong id="rSessions">0</strong>
+              </article>
+              <article class="stat" data-spot>
+                <span>Daily average</span><strong id="rAvg">0m</strong>
+              </article>
+              <article class="stat" data-spot>
+                <span>Tasks worked on</span><strong id="rTasks">0</strong>
+              </article>
+            </section>
+            <section class="grid-2">
+              <article class="panel">
+                <h2>Hours per day</h2>
+                <div id="dailyChart" class="chart-box"></div>
+              </article>
+              <article class="panel">
+                <h2>Time by task</h2>
+                <div class="donut-wrap">
+                  <div id="taskChart" class="chart-box donut"></div>
+                  <ul id="taskLegend" class="legend"></ul>
+                </div>
+              </article>
+            </section>
+            <section class="grid-2">
+              <article class="panel">
+                <h2>Where the time went</h2>
+                <div class="table-wrap">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Task</th>
+                        <th>Sessions</th>
+                        <th>Time</th>
+                      </tr>
+                    </thead>
+                    <tbody id="taskTable"></tbody>
+                  </table>
+                </div>
+              </article>
+              <article class="panel">
+                <div class="panel-head"><h2>Time entries</h2></div>
+                <div id="entryList"></div>
+              </article>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Dialogs ===== -->
+    <dialog id="taskDialog" aria-labelledby="dlgTitle">
+      <form id="taskForm" class="dlg" novalidate>
+        <h2 id="dlgTitle">New task</h2>
+        <label class="field"
+          >Title
+          <input
+            name="title"
+            maxlength="120"
+            autocomplete="off"
+            placeholder="What needs to be done?" /><span
+            class="err"
+            data-for="title"
+          ></span
+        ></label>
+        <label class="field"
+          >Description
+          <textarea
+            name="description"
+            rows="3"
+            maxlength="1000"
+            placeholder="Add some details (optional)"
+          ></textarea
+          ><span class="err" data-for="description"></span
+        ></label>
+        <div class="grid2">
+          <label class="field"
+            >Status
+            <select name="status">
+              <option value="todo">To do</option>
+              <option value="in-progress">In progress</option>
+              <option value="done">Done</option>
+            </select></label
+          >
+          <label class="field"
+            >Priority
+            <select name="priority">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+            </select></label
+          >
+          <label class="field"
+            >Due date <input name="dueDate" type="date" /><span
+              class="err"
+              data-for="dueDate"
+            ></span
+          ></label>
+          <label class="field"
+            >Tags
+            <input
+              name="tags"
+              placeholder="work, urgent"
+              autocomplete="off" /><span class="err" data-for="tags"></span
+          ></label>
+        </div>
+        <p class="form-err" id="taskErr" role="alert"></p>
+        <div class="row">
+          <button type="button" class="btn" id="taskCancel">Cancel</button
+          ><button class="btn primary" id="taskSave">Save task</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="confirmDialog">
+      <form method="dialog" class="dlg">
+        <h2 id="confirmTitle">Delete this task?</h2>
+        <p id="confirmMsg" class="muted"></p>
+        <div class="row">
+          <button class="btn" value="cancel" autofocus>Cancel</button
+          ><button class="btn danger" value="ok">Delete</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="toasts" class="toasts" aria-live="polite"></div>
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

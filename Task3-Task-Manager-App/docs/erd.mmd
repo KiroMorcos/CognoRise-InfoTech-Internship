@@ -1,0 +1,41 @@
+erDiagram
+    USER ||--o{ TASK : owns
+    USER ||--o{ TIMEENTRY : tracks
+    TASK ||--o{ TIMEENTRY : "time spent"
+
+    USER {
+        ObjectId _id PK
+        string name "2-50 chars"
+        string email UK "unique, lowercase"
+        string password "bcrypt hash (cost 12)"
+        string role "user | admin"
+        string refreshTokenHash "sha256 of current refresh token"
+        date createdAt
+        date updatedAt
+    }
+
+    TASK {
+        ObjectId _id PK
+        ObjectId owner FK "references USER._id"
+        string title "required, max 120"
+        string description "max 1000"
+        string status "todo | in-progress | done"
+        string priority "low | medium | high"
+        date dueDate "nullable"
+        array tags "embedded strings, max 5"
+        date createdAt
+        date updatedAt
+    }
+
+    TIMEENTRY {
+        ObjectId _id PK
+        ObjectId owner FK "references USER._id"
+        ObjectId task FK "references TASK._id"
+        string description "max 200"
+        date startTime "server clock"
+        date endTime "null while running"
+        number duration "seconds"
+        boolean isRunning "max one true per user"
+        date createdAt
+        date updatedAt
+    }
