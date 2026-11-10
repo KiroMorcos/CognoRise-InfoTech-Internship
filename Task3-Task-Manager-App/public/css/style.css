@@ -1111,6 +1111,9 @@ dialog[open] {
   border-color: var(--on-g);
   color: var(--bg);
 }
+:root[data-theme="dark"] .timerbar .btn {
+  color: #fef3e2;
+}
 .pulse {
   width: 10px;
   height: 10px;
