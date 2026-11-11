@@ -9,12 +9,13 @@ const taskSchema = new Schema(
     priority: { type: String, enum: PRIORITIES, default: "medium" },
     dueDate: { type: Date, default: null },
     tags: { type: [String], default: [] },
+    dueReminderStages: { type: [Number], default: [] },          // reminder stages (hours before the deadline) already e-mailed
     owner: { type: Schema.Types.ObjectId, ref: "User", required: true }
   },
   { timestamps: true }
 );
 
 taskSchema.index({ owner: 1, status: 1, dueDate: 1 });
-taskSchema.set("toJSON", { transform: (doc, ret) => { delete ret.__v; return ret; } });
+taskSchema.set("toJSON", { transform: (doc, ret) => { delete ret.__v; delete ret.dueReminderStages; return ret; } });
 
 module.exports = model("Task", taskSchema);

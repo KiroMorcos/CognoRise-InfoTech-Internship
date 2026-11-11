@@ -2,6 +2,7 @@ const Task = require("../models/Task");
 const TimeEntry = require("../models/TimeEntry");
 const ApiError = require("../utils/ApiError");
 const timer = require("../services/timer.service");
+const reminders = require("../services/reminder.service");
 
 const startOfToday = () => { const d = new Date(); d.setUTCHours(0, 0, 0, 0); return d; };
 const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -43,6 +44,7 @@ exports.stats = async (req, res) => {
 
 exports.create = async (req, res) => {
   const task = await Task.create({ ...req.body, owner: req.user._id });
+  reminders.checkTask(task.toObject(), req.user);             // a task that is already close to its deadline is e-mailed right away
   res.status(201).json({ success: true, data: task });
 };
 
@@ -54,8 +56,11 @@ exports.getOne = async (req, res) => {
 
 exports.update = async (req, res) => {
   if (req.body.status === "done") await timer.stopIfRunningOn(req.user._id, req.params.id);   // finishing a task stops its timer
-  const task = await Task.findOneAndUpdate({ _id: req.params.id, ...access(req) }, { $set: req.body }, { new: true, runValidators: true });
+  const changes = { ...req.body };
+  if ("dueDate" in changes) changes.dueReminderStages = [];   // a new due date starts a fresh reminder cycle
+  const task = await Task.findOneAndUpdate({ _id: req.params.id, ...access(req) }, { $set: changes }, { new: true, runValidators: true });
   if (!task) throw new ApiError(404, "Task not found");
+  if (task.dueDate) reminders.checkTask(task.toObject(), req.user);
   res.json({ success: true, data: task });
 };
 

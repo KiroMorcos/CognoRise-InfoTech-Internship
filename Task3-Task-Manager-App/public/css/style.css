@@ -1107,12 +1107,16 @@ dialog[open] {
   font-size: 1.3rem;
 }
 .timerbar .btn {
-  background: var(--on-g);
-  border-color: var(--on-g);
-  color: var(--bg);
-}
-:root[data-theme="dark"] .timerbar .btn {
+  /* fixed palette colours: the bar is always amber/orange, so the button must not depend on the theme */
+  background: #2a1a0e;
+  border-color: #2a1a0e;
   color: #fef3e2;
+}
+.timerbar .btn:hover {
+  background: #45311f;
+  border-color: #45311f;
+  color: #fef3e2;
+  box-shadow: 0 8px 20px rgba(42, 26, 14, 0.4);
 }
 .pulse {
   width: 10px;

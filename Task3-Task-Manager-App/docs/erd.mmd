@@ -23,6 +23,7 @@ erDiagram
         string priority "low | medium | high"
         date dueDate "nullable"
         array tags "embedded strings, max 5"
+        array dueReminderStages "due-date e-mail stages already sent"
         date createdAt
         date updatedAt
     }
@@ -36,6 +37,7 @@ erDiagram
         date endTime "null while running"
         number duration "seconds"
         boolean isRunning "max one true per user"
+        number reminderCount "timer e-mails already sent"
         date createdAt
         date updatedAt
     }
